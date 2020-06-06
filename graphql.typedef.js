@@ -1,7 +1,9 @@
 const typeDefs = `
 type Query {
-    getLogs: [Logs!]!
-    clearLogs: String!
+    getState: String!,
+    getLogs: Boolean!,
+    stopBot: String!,
+    redeployBot: String!
 }
 type Logs {
     time: Int!,
@@ -12,13 +14,17 @@ type Mutation{
     startBot(
         name: String!,
         attempt: Int
+    ): String!,
+    sendText(
+        to: String!,
+        text: String!,
     ): String!
 }
 type Subscription {
     logs: [Logs!]!,
-    qr: String!
+    qr: String!,
+    state: String!
 }
-
 `;
 
 module.exports = typeDefs;

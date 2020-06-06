@@ -1,0 +1,99 @@
+{
+  "logs": [
+    {
+      "type": "SERVER",
+      "time": 1591409922,
+      "desc": "Starting Bot server"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591409937,
+      "desc": "Sending QR (1)"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591410013,
+      "desc": "Starting Bot server canceled"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411047,
+      "desc": "Starting Bot server"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411063,
+      "desc": "Whatsapp Authenticated!"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411063,
+      "desc": "Bot server Started!"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411184,
+      "desc": "[EXEC] #getId from Riih Jannah"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411191,
+      "desc": "[RECV] Message from Riih Jannah"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411222,
+      "desc": "Sending Message to 6281333908590@c.us"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411339,
+      "desc": "Sending Message to 6281333908590@c.us"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411553,
+      "desc": "Starting Bot server"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411569,
+      "desc": "Whatsapp Authenticated!"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411569,
+      "desc": "Bot server Started!"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411724,
+      "desc": "Session: OPENING"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411724,
+      "desc": "Session: PAIRING"
+    },
+    {
+      "type": "SERVER",
+      "time": 1591411725,
+      "desc": "Session: CONNECTED"
+    }
+  ],
+  "sessions": [
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server",
+    "server"
+  ]
+}
