@@ -39,7 +39,7 @@ const startBot = async (name, attempt) => {
     attempt = attempt ? attempt : 3;
     setTimeout(() => {
         if (!authPassed) send('error', 'Starting Bot Timeout');
-    }, 30000 * attempt);
+    }, (30000 * attempt) + 5000);
 
     venom.create(name,
     (base64Qr) => {
