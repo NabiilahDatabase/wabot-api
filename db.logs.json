@@ -104,6 +104,31 @@
       "from": "SERVER",
       "time": 1591681923,
       "desc": "Sending Message to 6281333908590567@c.us"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591769678,
+      "desc": "Starting Server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591769699,
+      "desc": "Restarting Server..."
+    },
+    {
+      "from": "SERVER",
+      "time": 1591769728,
+      "desc": "Starting Server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591769753,
+      "desc": "Whatsapp Authenticated!"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591769753,
+      "desc": "Bot Server Started!"
     }
   ]
 }

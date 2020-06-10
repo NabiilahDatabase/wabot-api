@@ -83,7 +83,7 @@ const restartServer = (server, from) => {
     startBot('server');
 }
 
-var job = new CronJob('0 0 0 * * *', restartServer());
+var job = new CronJob('0 0 0 * * *', restartServer);
 job.start();
 
 const messageHandler = async (serverMessage) => {
