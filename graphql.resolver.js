@@ -12,8 +12,12 @@ var pubsub;
 var state = 'inactive';
 
 const initBot = async (pubSub) => {
-    pubsub = pubSub;
-    await startServer();
+    try {
+        pubsub = pubSub;
+        await startServer();
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 const log = async (from, desc) => {

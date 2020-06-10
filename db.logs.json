@@ -129,6 +129,66 @@
       "from": "SERVER",
       "time": 1591769753,
       "desc": "Bot Server Started!"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771012,
+      "desc": "Starting Server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771043,
+      "desc": "Starting Bot Server canceled"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771088,
+      "desc": "Starting Server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771104,
+      "desc": "Sending QR [1]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771133,
+      "desc": "Sending QR [2]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771163,
+      "desc": "Sending QR [3]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591771179,
+      "desc": "Starting Bot Server canceled"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591773874,
+      "desc": "Starting Server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591773890,
+      "desc": "Sending QR [1]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591773919,
+      "desc": "Sending QR [2]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591773949,
+      "desc": "Sending QR [3]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591773965,
+      "desc": "Starting Bot Server canceled"
     }
   ]
 }
