@@ -57,8 +57,10 @@ const startServer = async () => {
                     dbLogs.get('logs').remove().write();
                 }
             } else {
-                server.kill();
-                server = null;
+                if (server) {
+                    server.kill();
+                    server = null;
+                }
                 changeState('inactive');
                 log('SERVER', `Starting Bot Server canceled`);
                 resolve(message);
