@@ -36,14 +36,16 @@ const startBot = async (name, attempt) => {
 
     let counter = 1;
     let authPassed = false;
+    let qrSended = false;
     attempt = attempt ? attempt : 3;
     setTimeout(() => {
-        if (!authPassed) send('error', 'Starting Bot Timeout');
+        if (!authPassed && !qrSended) send('error', 'Starting Bot Timeout');
     }, (30000 * attempt) + 5000);
 
     venom.create(name,
     (base64Qr) => {
         if (counter <= attempt) {
+            qrSended = true;
             send('auth', `Sending QR [${counter}]`, { qr: base64Qr });
             counter++;
         } else {
