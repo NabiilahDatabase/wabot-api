@@ -1,13 +1,15 @@
 const typeDefs = `
 type Query {
+    startServer: String!,
+    stopServer: String!,
+    redeployServer: String!,
     getState: String!,
     getLogs: Boolean!,
-    stopBot: String!,
-    redeployBot: String!
+    clearLog: String!,
 }
 type Logs {
+    from: String!,
     time: Int!,
-    type: String!,
     desc: String!,
 }
 type Mutation{
@@ -18,6 +20,9 @@ type Mutation{
     sendText(
         to: String!,
         text: String!,
+    ): String!,
+    addAdmin(
+        hp: String!
     ): String!
 }
 type Subscription {

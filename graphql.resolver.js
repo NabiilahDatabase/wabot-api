@@ -1,61 +1,62 @@
-const sulla = require('sulla');
+const { fork } = require('child_process');
 const fs = require('fs-extra');
+
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const db = low(new FileSync('./logs.json'));
-db.defaults({ logs: [], sessions: [] }).write();
-
-const { fork } = require('child_process');
+const dbLogs = low(new FileSync('./db.logs.json'));
+const dbGroup = low(new FileSync('./db.groups.json'));
+dbLogs.defaults({ logs: [] }).write();
 
 var server;
+var pubsub;
 var state = 'inactive';
 
-const log = async (pubsub, type, desc) => {
-    const time = Math.floor(Date.now() / 1000);
-    console.log(type, time, desc);
-    await db.get('logs').push({type, time, desc}).write();
-    const logs = await db.get('logs').value();
-    pubsub.publish('logs', {logs: logs});
+const initBot = async (pubSub) => {
+    pubsub = pubSub;
+    await startServer();
 }
-const changeState = (pubsub, s) => {
-    console.log('STATE:', s);
+
+const log = async (from, desc) => {
+    const time = Math.floor(Date.now() / 1000);
+    await dbLogs.get('logs').push({from, time, desc}).write();
+    const logs = await dbLogs.get('logs').value();
+    pubsub.publish('logs', {logs: logs});
+    console.log('\x1b[32m' + from + '\x1b[0m', time, desc);
+}
+const changeState = (s) => {
     state = s;
     pubsub.publish('state', {state: s});
 }
 
-const startBot = async (pubsub, name, attempt) => {
-    if (server) { server.kill(); server = null; console.log('kill server process'); }
-    const cacheExists = await fs.pathExists(`./${name}`);
-    if (cacheExists) {
-        fs.remove(`./${name}/Default/Service Worker/Database/MANIFEST-000001`);
-        console.log('clearing cache');
-    }
+const startServer = async () => {
     server = fork('server.js');
+    changeState('auth');
+    log('SERVER', `Starting Server`);
+    
+    server.send({ cmd: 'start-server' });
 
-    changeState(pubsub, 'auth');
-    log(pubsub, 'SERVER', `Starting Bot ${name}`);
-    server.send({
-        cmd: 'create-bot',
-        data: { name, attempt }
-    });
     return new Promise((resolve, reject) => {
         server.on('message', (response) => {
             const { type, message, data } = response;
-            if (type === 'log') {
-                const { qr, connected } = data;
-                log(pubsub, 'SERVER', message);
-                if (qr) { pubsub.publish('qr', {qr}); }
-                if (connected) {
-                    changeState(pubsub, 'active');
-                    db.get('sessions').push(name).write();
-                    log(pubsub, 'SERVER', `Bot ${name} Started!`);
-                    resolve('ok');
+            if (type !== 'error') {
+                log('SERVER', message);
+                if (type === 'auth') {
+                    const { qr, connected } = data;
+                    if (qr) { pubsub.publish('qr', {qr}); }
+                    if (connected) {
+                        changeState('active');
+                        log('SERVER', `Bot Server Started!`);
+                        resolve('ok');
+                    }
+                }
+                if (type === 'clearLog') {
+                    dbLogs.get('logs').remove().write();
                 }
             } else {
                 server.kill();
                 server = null;
-                changeState(pubsub, 'inactive');
-                log(pubsub, 'SERVER', `Starting Bot ${name} canceled`);
+                changeState('inactive');
+                log('SERVER', `Starting Bot Server canceled`);
                 resolve(message);
             }
         });
@@ -64,47 +65,54 @@ const startBot = async (pubsub, name, attempt) => {
 
 const resolvers = {
     Query: {
+        async startServer(perent, args, { pubsub }) {
+            await dbLogs.get('logs').remove().write();
+            return await startServer();
+        },
+        stopServer(perent, args, { pubsub }) {
+            if (state === 'active') {
+                server.kill();
+                server = null;
+                changeState('inactive');
+                log('SERVER', `Bot Server Stopped!`);
+                return 'ok';
+            } else {
+                log('SERVER', `Bot Server is Inactive!`);
+                return 'bot inactive';
+            }
+        },
+        async redeployServer(perent, args, { pubsub }) {
+            if (await fs.pathExists(`./server`)) {
+                fs.remove(`./server`);
+            }
+            log('SERVER', `Redeploy Bot server!`);
+            return await startServer();
+        },
         getState(perent, args, { pubsub }) {
             pubsub.publish('state', {state: state});
             return state;
         },
         async getLogs(perent, args, { pubsub }) {
-            const logs = await db.get('logs').value();
+            const logs = await dbLogs.get('logs').value();
             pubsub.publish('logs', {logs: logs});
             const exist = logs ? true : false;
             return exist;
         },
-        stopBot(perent, args, { pubsub }) {
-            if (state === 'active') {
-                server.kill();
-                server = null;
-                changeState(pubsub, 'inactive');
-                log(pubsub, 'SERVER', `Bot ${name} Stopped!`);
-                return 'ok';
-            } else {
-                log(pubsub, 'SERVER', `Bot ${name} is Inactive!`);
-                return 'bot inactive';
-            }
-        },
-        async redeployBot(perent, args, { pubsub }) {
-            if (await fs.pathExists(`./server`)) {
-                fs.remove(`./server`);
-            }
-            log(pubsub, 'SERVER', `Redeploy Bot server!`);
-            startBot(pubsub, 'server', 3);
+        clearLog(perent, args, { pubsub }) {
+            dbLogs.get('logs').remove().write();
+            log('SERVER', `Server Log Cleared!`);
             return 'ok';
         }
     },
 
     Mutation: {
         async startBot(parent, args, { pubsub }) {
-            db.get('logs').remove().write();
             const name = args.name;
             const attempt = args.attempt;
-            if (['node_modules'].includes(name)) {
+            if (['node_modules', 'server'].includes(name)) {
                 return 'nama bot dilarang';
             }
-            return startBot(pubsub, name, attempt);
+            return await startServer(name, attempt);
         },
         async sendText(perent, args, { pubsub }) {
             if (state === 'active') {
@@ -112,6 +120,17 @@ const resolvers = {
                     cmd: 'send-text',
                     data: { to: args.to, text: args.text }
                 });
+                return 'ok';
+            } else {
+                return 'bot inactive';
+            }
+        },
+        async addAdmin(perent, args, { pubsub }) {
+            if (state === 'active') {
+                const groups = dbGroup.get('groups').value();
+                const childs = groups.flatMap(g => g.childs);
+                await server.addParticipant(groups[0].id, args.hp + '@c.us');
+                log('SERVER', `${args.hp} added as admin!`);
                 return 'ok';
             } else {
                 return 'bot inactive';
@@ -127,6 +146,6 @@ const resolvers = {
 };
 
 module.exports.resolvers = resolvers;
-module.exports.db = db;
+module.exports.dbLogs = dbLogs;
 module.exports.log = log;
-module.exports.startBot = startBot;
+module.exports.initBot = initBot;

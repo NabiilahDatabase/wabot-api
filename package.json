@@ -10,9 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cron": "^1.8.2",
     "fs-extra": "^9.0.0",
     "graphql-yoga": "^1.18.3",
     "lowdb": "^1.0.0",
-    "sulla": "^2.3.14"
+    "venom-bot": "^1.0.0"
   }
 }
