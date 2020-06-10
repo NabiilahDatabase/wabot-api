@@ -4,10 +4,7 @@ const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const dbGroup = low(new FileSync('./db.groups.json'));
 dbGroup.defaults({ groups: [] }).write();
-
 var CronJob = require('cron').CronJob;
-var job = new CronJob('0 0 0 * * *', restartServer());
-job.start();
 
 var server;
 
@@ -85,6 +82,9 @@ const restartServer = (server, from) => {
     server.close().catch((err) => console.log(err));
     startBot('server');
 }
+
+var job = new CronJob('0 0 0 * * *', restartServer());
+job.start();
 
 const messageHandler = async (serverMessage) => {
     const { type, body, from, t, sender, isGroupMsg, chat } = serverMessage;
