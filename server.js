@@ -7,6 +7,7 @@ dbGroup.defaults({ groups: [] }).write();
 var CronJob = require('cron').CronJob;
 
 var server;
+var serverName;
 
 const send = (type, message, data) => {
     data = data ? data : {};
@@ -15,8 +16,9 @@ const send = (type, message, data) => {
 
 process.on('message', (msg) => {
     const { cmd, data } = msg;
+    const { name } = data;
     if (cmd === 'start-server') {
-        startBot('server', 3);
+        startBot(name, 3);
     } else if (cmd === 'create-bot') {
         const { name, attempt } = data;
         startBot(name, attempt);
@@ -28,6 +30,7 @@ process.on('message', (msg) => {
 });
 
 const startBot = async (name, attempt) => {
+    serverName = name;
 
     const cacheExists = await fs.pathExists(`./${name}`);
     if (cacheExists) {
@@ -78,11 +81,11 @@ const startBot = async (name, attempt) => {
         }
     );
 }
-const restartServer = (server, from) => {
+const restartServer = (from) => {
     if (from) { server.sendText(from, 'Merestart ulang server...')};
-    send('log', `Restarting Server...`);
+    send('log', `Restarting ${serverName}...`);
     server.close().catch((err) => console.log(err));
-    startBot('server');
+    startBot(serverName);
 }
 
 var job = new CronJob('0 0 0 * * *', restartServer);
@@ -139,7 +142,7 @@ const messageHandler = async (serverMessage) => {
         // send('log', `[RECV] ${ty} Message from ${from}`);
 
         const { motherIndex, isMotherGroup, isChildGroup } = checkGroup(from);
-        if (isGroupMsg && isMotherGroup) {
+        if (isGroupMsg && isMotherGroup && serverName !== 'server') {
             const groups = dbGroup.get('groups').value();
             const g = groups[motherIndex];
             send('clearLog', `Clearing Logs`);

@@ -10,6 +10,7 @@ dbLogs.defaults({ logs: [] }).write();
 var server;
 var pubsub;
 var state = 'inactive';
+var serverName;
 
 const initBot = async (pubSub, type) => {
     try {
@@ -33,24 +34,25 @@ const changeState = (s) => {
     pubsub.publish('state', {state: s});
 }
 
-const startServer = async (type) => {
+const startServer = async (name) => {
     server = fork('server.js');
     changeState('auth');
-    log(type, `Starting ${type}`);
+    serverName = name;
+    log(name, `Starting ${name}`);
     
-    server.send({ cmd: 'start-server' });
+    server.send({ cmd: 'start-server', data: { name: name } });
 
     return new Promise((resolve, reject) => {
         server.on('message', (response) => {
             const { type, message, data } = response;
             if (type !== 'error') {
-                log(type, message);
+                log(serverName, message);
                 if (type === 'auth') {
                     const { qr, connected } = data;
                     if (qr) { pubsub.publish('qr', {qr}); }
                     if (connected) {
                         changeState('active');
-                        log(type, `Bot ${type} Started!`);
+                        log(serverName, `Bot ${serverName} Started!`);
                         resolve('ok');
                     }
                 }
@@ -63,7 +65,7 @@ const startServer = async (type) => {
                     server = null;
                 }
                 changeState('inactive');
-                log(type, `Starting Bot ${type} canceled`);
+                log(serverName, `Starting Bot ${serverName} canceled`);
                 resolve(message);
             }
         });
@@ -77,10 +79,10 @@ const resolvers = {
                 server.kill();
                 server = null;
                 changeState('inactive');
-                log('server', `Bot Server Stopped!`);
+                log(serverName, `Bot ${serverName} Stopped!`);
                 return 'ok';
             } else {
-                log('server', `Bot Server is Inactive!`);
+                log(serverName, `Bot ${serverName} is Inactive!`);
                 return 'bot inactive';
             }
         },
@@ -96,7 +98,7 @@ const resolvers = {
         },
         clearLog(perent, args, { pubsub }) {
             dbLogs.get('logs').remove().write();
-            log('server', `Server Log Cleared!`);
+            log(serverName, `Server Log Cleared!`);
             return 'ok';
         }
     },

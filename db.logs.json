@@ -29,6 +29,56 @@
       "from": "ERROR",
       "time": 1591780223,
       "desc": "Starting Bot error canceled"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591848990,
+      "desc": "Starting server"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591849019,
+      "desc": "Sending QR [1]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591849043,
+      "desc": "Sending QR [2]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591849073,
+      "desc": "Sending QR [3]"
+    },
+    {
+      "from": "SERVER",
+      "time": 1591849103,
+      "desc": "Starting Bot server canceled"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591849632,
+      "desc": "Starting client-1"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591849637,
+      "desc": "Sending QR [1]"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591849666,
+      "desc": "Sending QR [2]"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591849696,
+      "desc": "Sending QR [3]"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591849726,
+      "desc": "Starting Bot client-1 canceled"
     }
   ]
 }
