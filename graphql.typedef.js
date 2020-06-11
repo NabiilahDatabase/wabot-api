@@ -1,8 +1,6 @@
 const typeDefs = `
 type Query {
-    startServer: String!,
     stopServer: String!,
-    redeployServer: String!,
     getState: String!,
     getLogs: Boolean!,
     clearLog: String!,
@@ -15,7 +13,7 @@ type Logs {
 type Mutation{
     startBot(
         name: String!,
-        attempt: Int
+        restart: Boolean
     ): String!,
     sendText(
         to: String!,

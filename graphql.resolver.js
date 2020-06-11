@@ -11,10 +11,10 @@ var server;
 var pubsub;
 var state = 'inactive';
 
-const initBot = async (pubSub) => {
+const initBot = async (pubSub, type) => {
     try {
         pubsub = pubSub;
-        await startServer();
+        await startServer(type);
     } catch (err) {
         console.log(err);
     }
@@ -22,6 +22,7 @@ const initBot = async (pubSub) => {
 
 const log = async (from, desc) => {
     const time = Math.floor(Date.now() / 1000);
+    from = from.toUpperCase();
     await dbLogs.get('logs').push({from, time, desc}).write();
     const logs = await dbLogs.get('logs').value();
     pubsub.publish('logs', {logs: logs});
@@ -32,10 +33,10 @@ const changeState = (s) => {
     pubsub.publish('state', {state: s});
 }
 
-const startServer = async () => {
+const startServer = async (type) => {
     server = fork('server.js');
     changeState('auth');
-    log('SERVER', `Starting Server`);
+    log(type, `Starting ${type}`);
     
     server.send({ cmd: 'start-server' });
 
@@ -43,13 +44,13 @@ const startServer = async () => {
         server.on('message', (response) => {
             const { type, message, data } = response;
             if (type !== 'error') {
-                log('SERVER', message);
+                log(type, message);
                 if (type === 'auth') {
                     const { qr, connected } = data;
                     if (qr) { pubsub.publish('qr', {qr}); }
                     if (connected) {
                         changeState('active');
-                        log('SERVER', `Bot Server Started!`);
+                        log(type, `Bot ${type} Started!`);
                         resolve('ok');
                     }
                 }
@@ -62,7 +63,7 @@ const startServer = async () => {
                     server = null;
                 }
                 changeState('inactive');
-                log('SERVER', `Starting Bot Server canceled`);
+                log(type, `Starting Bot ${type} canceled`);
                 resolve(message);
             }
         });
@@ -71,28 +72,17 @@ const startServer = async () => {
 
 const resolvers = {
     Query: {
-        async startServer(perent, args, { pubsub }) {
-            await dbLogs.get('logs').remove().write();
-            return await startServer();
-        },
         stopServer(perent, args, { pubsub }) {
             if (state === 'active') {
                 server.kill();
                 server = null;
                 changeState('inactive');
-                log('SERVER', `Bot Server Stopped!`);
+                log('server', `Bot Server Stopped!`);
                 return 'ok';
             } else {
-                log('SERVER', `Bot Server is Inactive!`);
+                log('server', `Bot Server is Inactive!`);
                 return 'bot inactive';
             }
-        },
-        async redeployServer(perent, args, { pubsub }) {
-            if (await fs.pathExists(`./server`)) {
-                fs.remove(`./server`);
-            }
-            log('SERVER', `Redeploy Bot server!`);
-            return await startServer();
         },
         getState(perent, args, { pubsub }) {
             pubsub.publish('state', {state: state});
@@ -106,7 +96,7 @@ const resolvers = {
         },
         clearLog(perent, args, { pubsub }) {
             dbLogs.get('logs').remove().write();
-            log('SERVER', `Server Log Cleared!`);
+            log('server', `Server Log Cleared!`);
             return 'ok';
         }
     },
@@ -114,11 +104,18 @@ const resolvers = {
     Mutation: {
         async startBot(parent, args, { pubsub }) {
             const name = args.name;
-            const attempt = args.attempt;
-            if (['node_modules', 'server'].includes(name)) {
+            const restart = args.restart;
+            await dbLogs.get('logs').remove().write();
+            if (['node_modules'].includes(name)) {
                 return 'nama bot dilarang';
             }
-            return await startServer(name, attempt);
+            if (restart) {
+                if (await fs.pathExists(`./${name}`)) {
+                    fs.remove(`./${name}`);
+                }
+                log(name, `Redeploy Bot ${name}!`);
+            }
+            return await startServer(name);
         },
         async sendText(perent, args, { pubsub }) {
             if (state === 'active') {
@@ -136,7 +133,7 @@ const resolvers = {
                 const groups = dbGroup.get('groups').value();
                 const childs = groups.flatMap(g => g.childs);
                 await server.addParticipant(groups[0].id, args.hp + '@c.us');
-                log('SERVER', `${args.hp} added as admin!`);
+                log('server', `${args.hp} added as admin!`);
                 return 'ok';
             } else {
                 return 'bot inactive';

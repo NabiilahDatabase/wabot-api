@@ -8,8 +8,11 @@ const server  = new GraphQLServer({
     context: { pubsub }
 });
 
-initBot(pubsub);
+const type = process.argv[2] ? `client-${process.argv[2]}` : 'server';
+const port = 3000 + (process.argv[2] ? +process.argv[2] : 0);
 
-server.start({port: 3000}, ({ port }) => {
-    console.log(`Graphql Server started, listening on port ${port} for incoming requests.`);
+initBot(pubsub, type);
+
+server.start({port: port}, ({ port }) => {
+    console.log(`Graphql ${type} started, listening on port ${port} for incoming requests.`);
 });

@@ -1,3 +1,34 @@
 {
-  "logs": []
+  "logs": [
+    {
+      "from": "SERVER",
+      "time": 1591780109,
+      "desc": "Starting server"
+    },
+    {
+      "from": "CLIENT-1",
+      "time": 1591780118,
+      "desc": "Starting client-1"
+    },
+    {
+      "from": "AUTH",
+      "time": 1591780134,
+      "desc": "Sending QR [1]"
+    },
+    {
+      "from": "AUTH",
+      "time": 1591780163,
+      "desc": "Sending QR [2]"
+    },
+    {
+      "from": "AUTH",
+      "time": 1591780193,
+      "desc": "Sending QR [3]"
+    },
+    {
+      "from": "ERROR",
+      "time": 1591780223,
+      "desc": "Starting Bot error canceled"
+    }
+  ]
 }

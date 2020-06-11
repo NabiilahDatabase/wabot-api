@@ -4,7 +4,9 @@
   "description": "",
   "main": "api.js",
   "scripts": {
-    "start": "node api.js"
+    "start": "node api.js",
+    "pm": "pm2 start api.js -n wabot-server",
+    "pm1": "pm2 start api.js -n wabot-client1 -- 1"
   },
   "keywords": [],
   "author": "",
