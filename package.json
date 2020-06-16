@@ -16,6 +16,6 @@
     "fs-extra": "^9.0.0",
     "graphql-yoga": "^1.18.3",
     "lowdb": "^1.0.0",
-    "venom-bot": "^1.0.0"
+    "venom-bot": "^1.0.4"
   }
 }
