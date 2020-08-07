@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node api.js",
     "pm": "pm2 start api.js -n wabot-server",
-    "pm1": "pm2 start api.js -n wabot-client1 -- 1"
+    "pm1": "pm2 start api.js -n wabot-client1 -- 1",
+    "pm2": "pm2 start api.js -n wabot-client2 -- 2",
+    "pm3": "pm2 start api.js -n wabot-client3 -- 3",
+    "pm4": "pm2 start api.js -n wabot-client4 -- 4",
   },
   "keywords": [],
   "author": "",
